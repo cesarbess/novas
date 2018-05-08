@@ -1,3 +1,12 @@
+.filter-label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+}
+
 .search-bar {
   text-align: center;
   margin-top: 50px;
@@ -10,6 +19,7 @@
 }
 
 .article {
+  margin-top: 20px;
   cursor: pointer;
   padding: 50px;
 }
