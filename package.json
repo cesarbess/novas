@@ -29,6 +29,7 @@
     "axios": "^0.18.0",
     "babel-preset-stage-1": "^6.1.18",
     "lodash": "^3.10.1",
+    "newsapi": "^2.2.2",
     "react": "^0.14.9",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^0.14.9",

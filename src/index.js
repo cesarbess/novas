@@ -5,8 +5,10 @@ import ReactDOM from 'react-dom';
 import ArticlesList from './components/articles_list';
 import SearchBar from './components/search_bar';
 import SearchFilter from './components/search_filter';
+import NewsAPI from 'newsapi'
 
 const API_KEY = 'cb44516c502f4379be46955eee0d3f8f';
+const newsapi = new NewsAPI(API_KEY);
 
 let filtroPais = ['Brasil', 'Canada', 'Estados Unidos', 'França', 'Portugal', 'Russia'];
 let filtroPaisAbrv = ['br', 'ca', 'us', 'fr', 'pt', 'ru'];
@@ -74,10 +76,11 @@ class App extends Component {
   // API CALLS
 
   displayTopHeadlines() {
-    axios.get(`https://newsapi.org/v2/top-headlines?country=br&sortBy=publishedAt&apiKey=${API_KEY}`)
-    .then((response) => {
+    newsapi.v2.topHeadlines({
+      country: 'us'
+    }).then(response => {
       this.setState({
-        articles: response.data.articles
+        articles: response.articles
       });
     });
   }
@@ -87,12 +90,16 @@ class App extends Component {
     let countryFilter = this.state.countryFilter ? this.state.countryFilter : '';
     let queryType = this.state.countryFilter ? 'top-headlines' : 'everything';
     let categoryFilter = this.state.categoryFilter ? this.state.categoryFilter : '';
+    let sourcesFilter = this.state.sourcesFilter ? this.state.sourcesFilter : '';
 
-    console.log(`https://newsapi.org/v2/${queryType}?q=${term}&country=${countryFilter}&sortBy=publishedAt&apiKey=${API_KEY}`);
-    axios.get(`https://newsapi.org/v2/${queryType}?q=${term}&country=${countryFilter}&category=${categoryFilter}&sortBy=publishedAt&apiKey=${API_KEY}`)
-    .then((response) => {
+    newsapi.v2.topHeadlines({
+      sources: sourcesFilter,
+      q: term,
+      category: categoryFilter,
+      country: countryFilter
+    }).then(response => {
       this.setState({
-        articles: response.data.articles
+        articles: response.articles
       });
     });
   }
