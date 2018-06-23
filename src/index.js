@@ -5,7 +5,9 @@ import ReactDOM from 'react-dom';
 import ArticlesList from './components/articles_list';
 import SearchBar from './components/search_bar';
 import SearchFilter from './components/search_filter';
-import NewsAPI from 'newsapi'
+import FilterTags from './components/filter_tags';
+import NewsAPI from 'newsapi';
+
 
 const API_KEY = 'cb44516c502f4379be46955eee0d3f8f';
 const newsapi = new NewsAPI(API_KEY);
@@ -73,6 +75,58 @@ class App extends Component {
     this.newsSearch();
   }
 
+  getCurrentFilters() {
+    var currentFilters = []
+    if (this.state.countryFilter) {
+      currentFilters.push('countryFilter');
+    }
+    if (this.state.categoryFilter) {
+      currentFilters.push('categoryFilter');
+    }
+    if (this.state.sourcesFilter) {
+      currentFilters.push('sourcesFilter');
+    }
+    return currentFilters
+  }
+
+  getCurrentFiltersNames() {
+    var currentFiltersNames = []
+    if (this.state.countryFilter) {
+      currentFiltersNames.push(this.state.countryFilterName);
+    }
+    if (this.state.categoryFilter) {
+      currentFiltersNames.push(this.state.categoryFilterName);
+    }
+    if (this.state.sourcesFilter) {
+      currentFiltersNames.push(this.state.sourcesFilterName);
+    }
+    return currentFiltersNames
+  }
+
+  onFilterClosed(value) {
+    if (value == 'countryFilter') {
+      this.setState({
+        countryFilter: null,
+        countryFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+    else if (value == 'categoryFilter') {
+      this.setState({
+        categoryFilter: null,
+        categoryFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+    else if (value == 'sourcesFilter') {
+      this.setState({
+        sourcesFilter: null,
+        sourcesFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+  }
+
   // API CALLS
 
   displayTopHeadlines() {
@@ -106,20 +160,28 @@ class App extends Component {
 
   render() {
     const onSearchTermChange = _.debounce((term) => {this.onTermUpdate(term)}, 300);
+    const currentFilters = this.getCurrentFilters();
+    const currentFiltersNames = this.getCurrentFiltersNames();
+    console.log(currentFiltersNames)
     return (
       <div>
         <SearchBar onSearchTermChange={onSearchTermChange}/>
+        <FilterTags
+          currentFiltersNames={currentFiltersNames}
+          currentFilters={currentFilters}
+          onFilterClosed={value => this.onFilterClosed(value)}
+        />
         <p className='filter-label'>Filtrar por: </p>
         <div className="filters">
         <SearchFilter
           filterName={ this.state.countryFilterName || 'País'}
           filterItens={ filtroPais }
-          onFilterSelect={value => this.onCountryFilterSelect(value)}
+          onFilterSelect={ value => this.onCountryFilterSelect(value) }
         />
         <SearchFilter
           filterName={ this.state.categoryFilterName || 'Categoria'}
           filterItens={ filtroCategoria }
-          onFilterSelect={value => this.onCategoryFilterSelect(value)}
+          onFilterSelect={ value => this.onCategoryFilterSelect(value)}
         />
         <SearchFilter
           filterName={ this.state.sourcesFilterName || 'Fonte'}
