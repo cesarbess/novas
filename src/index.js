@@ -43,6 +43,8 @@ class App extends Component {
     this.displayTopHeadlines();
   }
 
+  // Listeners
+
   onCountryFilterSelect(value) {
     this.setState({
       countryFilter: filtroPaisAbrv[value],
@@ -62,7 +64,11 @@ class App extends Component {
   onSourcesFilterSelect(value) {
     this.setState({
       sourcesFilter: sourcesParams[value],
-      sourcesFilterName: sources[value]
+      sourcesFilterName: sources[value],
+      categoryFilter: null,
+      categoryFilterName: null,
+      countryFilter: null,
+      countryFilterName: null
     }, () =>
     this.newsSearch());
   }
@@ -71,9 +77,41 @@ class App extends Component {
     this.setState({
       term: value,
     }, () =>
-    console.log(this.state));
-    this.newsSearch();
+    this.newsSearch());
   }
+
+  onFilterClosed(value) {
+    if (value == 'countryFilter') {
+      this.setState({
+        countryFilter: null,
+        countryFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+    else if (value == 'categoryFilter') {
+      this.setState({
+        categoryFilter: null,
+        categoryFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+    else if (value == 'sourcesFilter') {
+      this.setState({
+        sourcesFilter: null,
+        sourcesFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
+  }
+
+  noFiltersSelected() {
+    return this.state.term == '' &&
+    this.state.countryFilter == null &&
+    this.state.categoryFilter == null &&
+    this.state.sourcesFilter == null
+  }
+
+  // Getters
 
   getCurrentFilters() {
     var currentFilters = []
@@ -103,30 +141,6 @@ class App extends Component {
     return currentFiltersNames
   }
 
-  onFilterClosed(value) {
-    if (value == 'countryFilter') {
-      this.setState({
-        countryFilter: null,
-        countryFilterName: null
-      }, () =>
-      this.newsSearch());
-    }
-    else if (value == 'categoryFilter') {
-      this.setState({
-        categoryFilter: null,
-        categoryFilterName: null
-      }, () =>
-      this.newsSearch());
-    }
-    else if (value == 'sourcesFilter') {
-      this.setState({
-        sourcesFilter: null,
-        sourcesFilterName: null
-      }, () =>
-      this.newsSearch());
-    }
-  }
-
   // API CALLS
 
   displayTopHeadlines() {
@@ -140,6 +154,12 @@ class App extends Component {
   }
 
   newsSearch() {
+
+    if (this.noFiltersSelected()) {
+      this.displayTopHeadlines();
+      return;
+    }
+
     let term = this.state.term ? this.state.term : '';
     let countryFilter = this.state.countryFilter ? this.state.countryFilter : '';
     let queryType = this.state.countryFilter ? 'top-headlines' : 'everything';
@@ -162,7 +182,6 @@ class App extends Component {
     const onSearchTermChange = _.debounce((term) => {this.onTermUpdate(term)}, 300);
     const currentFilters = this.getCurrentFilters();
     const currentFiltersNames = this.getCurrentFiltersNames();
-    console.log(currentFiltersNames)
     return (
       <div>
         <SearchBar onSearchTermChange={onSearchTermChange}/>
