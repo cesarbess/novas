@@ -15,6 +15,9 @@ const newsapi = new NewsAPI(API_KEY);
 let filtroPais = ['Brasil', 'Canada', 'Estados Unidos', 'França', 'Portugal', 'Russia'];
 let filtroPaisAbrv = ['br', 'ca', 'us', 'fr', 'pt', 'ru'];
 
+let filtroLinguagem = ['Português', 'Inglês', 'Francês', "Russo"]
+let filtroLinguagemAbrv = ['pt', 'en', 'fr', 'ru']
+
 let filtroCategoria = ['Negócios', 'Entretenimento', 'Geral', 'Saúde', 'Ciência', 'Esportes', 'Tecnologia'];
 let filtroCategoriaParams = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'];
 
@@ -37,7 +40,9 @@ class App extends Component {
       categoryFilter: null,
       categoryFilterName: null,
       sourcesFilter: null,
-      sourcesFilterName: null
+      sourcesFilterName: null,
+      languageFilter: null,
+      languageFilterName: null,
     };
 
     this.displayTopHeadlines();
@@ -80,6 +85,14 @@ class App extends Component {
     this.newsSearch());
   }
 
+  onLanguageFilterSelect(value){
+    this.setState({
+      languageFilter: filtroLinguagemAbrv[value],
+      languageFilterName: filtroLinguagem[value]
+    }, () =>
+    this.newsSearch());
+  }
+
   onFilterClosed(value) {
     if (value == 'countryFilter') {
       this.setState({
@@ -102,13 +115,21 @@ class App extends Component {
       }, () =>
       this.newsSearch());
     }
+    else if (value == 'languageFilter') {
+      this.setState({
+        languageFilter: null,
+        languageFilterName: null
+      }, () =>
+      this.newsSearch());
+    }
   }
 
   noFiltersSelected() {
     return this.state.term == '' &&
     this.state.countryFilter == null &&
     this.state.categoryFilter == null &&
-    this.state.sourcesFilter == null
+    this.state.sourcesFilter == null &&
+    this.state.languageFilter == null
   }
 
   // Getters
@@ -124,6 +145,10 @@ class App extends Component {
     if (this.state.sourcesFilter) {
       currentFilters.push('sourcesFilter');
     }
+    if (this.state.languageFilter) {
+      currentFilters.push('languageFilter');
+    }
+
     return currentFilters
   }
 
@@ -138,6 +163,10 @@ class App extends Component {
     if (this.state.sourcesFilter) {
       currentFiltersNames.push(this.state.sourcesFilterName);
     }
+    if (this.state.languageFilter) {
+      currentFiltersNames.push(this.state.languageFilterName);
+    }
+
     return currentFiltersNames
   }
 
@@ -165,12 +194,14 @@ class App extends Component {
     let queryType = this.state.countryFilter ? 'top-headlines' : 'everything';
     let categoryFilter = this.state.categoryFilter ? this.state.categoryFilter : '';
     let sourcesFilter = this.state.sourcesFilter ? this.state.sourcesFilter : '';
+    let languageFilter = this.state.languageFilter || '';
 
     newsapi.v2.topHeadlines({
       sources: sourcesFilter,
       q: term,
       category: categoryFilter,
-      country: countryFilter
+      country: countryFilter,
+      language: languageFilter
     }).then(response => {
       this.setState({
         articles: response.articles
@@ -182,6 +213,8 @@ class App extends Component {
     const onSearchTermChange = _.debounce((term) => {this.onTermUpdate(term)}, 300);
     const currentFilters = this.getCurrentFilters();
     const currentFiltersNames = this.getCurrentFiltersNames();
+    console.log(currentFilters);
+    console.log(currentFiltersNames);
     return (
       <div>
         <SearchBar onSearchTermChange={onSearchTermChange}/>
@@ -206,6 +239,11 @@ class App extends Component {
           filterName={ this.state.sourcesFilterName || 'Fonte'}
           filterItens={ sources }
           onFilterSelect={value => this.onSourcesFilterSelect(value)}
+        />
+        <SearchFilter
+          filterName={ this.state.languageFilterName || 'Linguagem'}
+          filterItens={ filtroLinguagem }
+          onFilterSelect={value => this.onLanguageFilterSelect(value)}
         />
         </div>
         <ArticlesList
