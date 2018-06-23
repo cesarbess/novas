@@ -53,7 +53,9 @@ class App extends Component {
   onCountryFilterSelect(value) {
     this.setState({
       countryFilter: filtroPaisAbrv[value],
-      countryFilterName: filtroPais[value]
+      countryFilterName: filtroPais[value],
+      sourcesFilter: null,
+      sourcesFilterName: null
     }, () =>
     this.newsSearch());
   }
@@ -61,7 +63,9 @@ class App extends Component {
   onCategoryFilterSelect(value) {
     this.setState({
       categoryFilter: filtroCategoriaParams[value],
-      categoryFilterName: filtroCategoria[value]
+      categoryFilterName: filtroCategoria[value],
+      sourcesFilter: null,
+      sourcesFilterName: null
     }, () =>
     this.newsSearch());
   }
@@ -231,6 +235,11 @@ class App extends Component {
           onFilterSelect={ value => this.onCountryFilterSelect(value) }
         />
         <SearchFilter
+          filterName={ this.state.languageFilterName || 'Linguagem'}
+          filterItens={ filtroLinguagem }
+          onFilterSelect={value => this.onLanguageFilterSelect(value)}
+        />
+        <SearchFilter
           filterName={ this.state.categoryFilterName || 'Categoria'}
           filterItens={ filtroCategoria }
           onFilterSelect={ value => this.onCategoryFilterSelect(value)}
@@ -239,11 +248,6 @@ class App extends Component {
           filterName={ this.state.sourcesFilterName || 'Fonte'}
           filterItens={ sources }
           onFilterSelect={value => this.onSourcesFilterSelect(value)}
-        />
-        <SearchFilter
-          filterName={ this.state.languageFilterName || 'Linguagem'}
-          filterItens={ filtroLinguagem }
-          onFilterSelect={value => this.onLanguageFilterSelect(value)}
         />
         </div>
         <ArticlesList
